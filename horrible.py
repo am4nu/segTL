@@ -41,12 +41,13 @@ if __name__="__main__"
     except ValueError:
         print("This is not a number")
     
-    while(t--):
+    while(t):
         a=input()
         if a==1:
             p=int(input())
             q=int(input())
         print(q(1,0,n-1,p-1,q-1))
+        t=t-1
         #push
 
     
