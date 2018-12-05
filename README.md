@@ -1,2 +1,4 @@
 # segTL
-segmen Tree Lazy propogation
+segment Tree Lazy propogation in Python3
+
+
