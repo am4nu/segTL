@@ -47,6 +47,7 @@ if __name__="__main__"
             p=int(input())
             q=int(input())
         print(q(1,0,n-1,p-1,q-1))
+        #push
 
     
 
