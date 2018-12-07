@@ -1,4 +1,4 @@
 # segTL
-segment Tree Lazy propogation implementation in Python
+segment Tree Lazy propagation implementation in Python
 
 
