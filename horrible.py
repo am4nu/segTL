@@ -1,105 +1,85 @@
-
-arr = [1,2,3,4]
-n=4
-t = [0]*(2*6) #generating tree
-l = [0]*(2*6) #generating corresponding lazy tree
-def bui(node,a,b):
- if (a>b): 
-  return
- if (a==b):
-  t[node]=arr[b]
-  return
-
- bui(node*2,a,(a+b)//2)
- bui(node*2+1,(a+b)//2 +1,b)
-
- t[node]=t[node*2]+t[node*2+1]
-
-
-def qu(node,a,b,i,j):
- if a>b or a > j or b < i:
-  return 0
-
- if l[node]!=0:
-  t[node]+=l[node]*(b-a+1)
-
-  if a!=b:
-   l[node*2]+=l[node]
-   l[node*2+1]+=l[node]
-
- l[node]=0
-
- if a>=i and b<=j:
-  return t[node]
+n, q = map(int, input().split())
+arr = [int(x) for x in input().split()] 
+size = 3*n
+tree=[]
+treeAdd=[]
+mulTree=[]
+for i in range(size):
+    tree.append(0)
+    treeAdd.append(0)
+    mulTree.append(1)
+mod = 10 ** 9 + 7
+def build(pos = 0, l = 0 ,r = n-1):
+    if l == r:
+       tree[pos] = arr[l] 
+    else:
+       mid = (l+r)//2
+       build(pos*2+1, l, mid)
+       build(pos*2+2, mid+1, r) 
+       tree[pos] = (tree[pos*2+1] + tree[pos*2+2]) % mod
+       
+def lazyPush(pos, l, r):
+    tree[pos] *= mulTree[pos]
+    tree[pos] += treeAdd[pos] * (r-l+1)
+    tree[pos] %= mod 
+    if l < r:
+        mulTree[pos*2+1] *= mulTree[pos] 
+        mulTree[pos*2+2] *= mulTree[pos] 
+        treeAdd[pos*2+1] *= mulTree[pos] 
+        treeAdd[pos*2+2] *= mulTree[pos] 
+        treeAdd[pos*2+1] += treeAdd[pos] 
+        treeAdd[pos*2+2] += treeAdd[pos] 
+    mulTree[pos] = 1 
+    treeAdd[pos] = 0 
     
- q1=qu(node*2,a,(a+b)//2,i,j)
- q2=qu(node*2+1,(a+b)//2  +1,b,i,j)
- return q1+q2
-
-def up(node,a,b,i,j):
- if a>b:
-  return
- if l[node]!=0:
-  t[node]+=l[node]*(b-a+1)
-  if a!=b:
-   l[node*2]+=l[node]
-   l[node*2+1]+=l[node]
-   
-  l[node]=0
-  
-  if a>b or a>j or b < i:
-   return
-  if a>=i and b<=j:
-   t[node]+=inc*(b-a+1)
-   if a!=b:
-    l[node*2]+=inc
-    l[node*2+1]+=inc
-	
-   return
-   up(node*2,a,(a+b)//2,i,j,inc)
-   up(node*2+1(a+b)//2  +1,i,j,inc)
-   t[node]=t[node*2] + t[node*2+1]
-  
-  
-  
-  
-  
- 
-
-
-if __name__=="__main__":
-
-    bui(1,0,n-1)
-    try:
-        ni=int(input("Type number of inputs"))
-    except ValueError:
-        print("This is not a number")
+def update(type,pos , l , r, start, end , val):
+    lazyPush(pos, l, r)
+    if l > end or r < start : return 
+       
+    if start <= l and r <= end:
+        if type == 1:
+           treeAdd[pos] += val 
+        elif type == 2:
+           mulTree[pos] *= val 
+           treeAdd[pos] *= val 
+        else:
+           mulTree[pos] = 0 
+           treeAdd[pos] = val 
+        lazyPush(pos, l, r) 
+    else:
+        mid = (l+r)//2
+        update(pos*2+1, l, mid, start, end, type, val) 
+        update(pos*2+2, mid+1, r, start, end, type, val) 
+       
+        tree[pos] = (tree[pos*2+1] + tree[pos*2+2]) 
+        
+def query(pos, l, r , start , end):
+    lazyPush(pos, l, r) 
     
-    print(t)
-    while(ni):
-        x=int(input())
-        if x==1:
-            p=int(input())
-            q=int(input())
-	    print(qu(1,0,n-1,p-1,q-1))
-	else:
-	    p=int(input())
-	    q=int(input())
-	    inc=int(input())
-	    up(1,0,n-1,p-1,q-1,inc)
-		print(qu(1,0,n-1,p-1,q-1))
-        ni=ni-1
-        #push
-
+    if l > end or r < start :
+      
+        return 0 
+    if  start <= l and r <= end:
+        
+        return tree[pos] 
+    mid = (l + r) // 2
+    return (query(pos*2+1, l, mid, start, end) + query(pos*2+2, mid+1, r, start, end)) 
     
+build()
 
+while q:
+    quarr=[int(x) for x in input().split()] 
+    q=q-1
+    if quarr[0]==4:
+        print(query(0,0,len(arr)-1,quarr[1],quarr[2])%mod)
+    else:
+        update(quarr[0],0,0,len(arr)-1,quarr[1],quarr[2],quarr[3])
+
+        
     
-
-
-
-
-    
-
-
-
-
+           
+        
+        
+        
+        
+       
